@@ -4,29 +4,22 @@ import { View, StyleSheet } from "react-native";
 import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 import { Station } from "../../../../model/Station";
-import StationService from "../../../../services/Station/Station.service";
 
 export interface MapStationProps {
-  onStationSelected?: Dispatch<SetStateAction<Station>>;
+  onStationSelected: Dispatch<SetStateAction<Station>>;
+  stations: Station[];
+  stationSelected: Station;
 }
 
 const MapStation = (props: MapStationProps) => {
   const [location, setLocation] = useState(
     undefined as unknown as LocationObject
   );
-  const [stations, setStations] = useState([] as Station[]);
-
   useEffect(() => {
     (async () => {
       await Location.requestForegroundPermissionsAsync();
       const location = await Location.getCurrentPositionAsync({});
       setLocation(location);
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      setStations(await StationService.getStations());
     })();
   }, []);
 
@@ -43,15 +36,20 @@ const MapStation = (props: MapStationProps) => {
           longitudeDelta: location ? 0.0121 : 0.121,
         }}
       >
-        {stations.map((station, index) => (
+        {props.stations.map((station, index) => (
           <Marker
             key={index}
+            onPress={() => props.onStationSelected(station)}
             coordinate={
               { latitude: station.lat, longitude: station.lng } as LatLng
             }
             title={station.name}
             description={
-              station.state?.nmbBikeAvailable + " / " + station.capacity
+              station.state &&
+              station.state.nmbBikeAvailable !== undefined &&
+              station.state.nmbPlaceAvailable !== undefined
+                ? station.state?.nmbBikeAvailable + " / " + station.capacity
+                : undefined
             }
           />
         ))}
