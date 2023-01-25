@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "velibforecast",
+    "slug": "velibforecast",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "config":
+      {
+        "googleMaps" : {
+          "apiKey" : "AIzaSyD6hOU8M2P9k_I8xYtzeolOOqCGveDHJhg"
+        }
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d9a2d0fe-0309-4030-b493-5dc18cdb5141"
+      }
+    },
+    "owner": "kevinpatinaud"
+  }
+}
