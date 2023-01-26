@@ -1,7 +1,8 @@
 import React from "react";
-import { View, StyleSheet, Dimensions, SafeAreaView, Text } from "react-native";
+import { View, StyleSheet, SafeAreaView, Text } from "react-native";
 import { Station } from "../../../../model/Station";
 import { Table, Row, Rows } from "react-native-table-component";
+import RowTableDetails from "./RowTableDetails";
 
 export interface DetailsStationProps {
   stationSelected?: Station;
@@ -19,39 +20,29 @@ const DetailsStation = (props: DetailsStationProps) => {
         <Row
           style={styles.thead}
           textStyle={styles.theadText}
-          data={["", "Available", "Place"]}
+          data={["", "Vélo(s)", "Place(s)"]}
         />
-        <Row
-          style={styles.row}
-          data={[
-            "Maintenant",
-            props.stationSelected.state?.nmbBikeAvailable,
-            props.stationSelected.state?.nmbPlaceAvailable,
-          ]}
+        <RowTableDetails
+          title={"Maintenant"}
+          minutesInFutur={0}
+          stationSelected={props.stationSelected}
         />
-        <Row
-          style={styles.row}
-          data={[
-            "Dans 1 heure",
-            props.stationSelected.state?.nmbBikeAvailable,
-            props.stationSelected.state?.nmbPlaceAvailable,
-          ]}
+        <RowTableDetails
+          title={"Dans 1 heure"}
+          minutesInFutur={60}
+          stationSelected={props.stationSelected}
+          hightLight
         />
-        <Row
-          style={styles.row}
-          data={[
-            "Dans 2 heures",
-            props.stationSelected.state?.nmbBikeAvailable,
-            props.stationSelected.state?.nmbPlaceAvailable,
-          ]}
+        <RowTableDetails
+          title={"Dans 2 heures"}
+          minutesInFutur={120}
+          stationSelected={props.stationSelected}
         />
-        <Row
-          style={styles.row}
-          data={[
-            "Dans 3 heures",
-            props.stationSelected.state?.nmbBikeAvailable,
-            props.stationSelected.state?.nmbPlaceAvailable,
-          ]}
+        <RowTableDetails
+          title={"Dans 3 heures"}
+          minutesInFutur={180}
+          stationSelected={props.stationSelected}
+          hightLight
         />
       </Table>
     </SafeAreaView>

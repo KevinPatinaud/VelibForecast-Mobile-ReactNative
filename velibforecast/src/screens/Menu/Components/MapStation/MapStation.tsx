@@ -44,13 +44,6 @@ const MapStation = (props: MapStationProps) => {
               { latitude: station.lat, longitude: station.lng } as LatLng
             }
             title={station.name}
-            description={
-              station.state &&
-              station.state.nmbBikeAvailable !== undefined &&
-              station.state.nmbPlaceAvailable !== undefined
-                ? station.state?.nmbBikeAvailable + " / " + station.capacity
-                : undefined
-            }
           />
         ))}
       </MapView>

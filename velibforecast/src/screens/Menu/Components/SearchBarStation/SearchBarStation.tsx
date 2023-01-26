@@ -31,7 +31,9 @@ const SearchBarStation = (props: SearchBarStationProps) => {
           setText(text);
           setCorrespondingStations(
             props.stations
-              .filter((station) => station.name.includes(text))
+              .filter((station) =>
+                station.name.toUpperCase().includes(text.toUpperCase())
+              )
               .sort((a, b) => a.name.localeCompare(b.name))
           );
         }}
