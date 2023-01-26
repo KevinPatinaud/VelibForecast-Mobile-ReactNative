@@ -15,6 +15,7 @@ const getStations = async () => {
       name: httpResponse.data[i]?.name,
       lat: httpResponse.data[i]?.latitude,
       lng: httpResponse.data[i]?.longitude,
+      capacity: httpResponse.data[i]?.capacity,
       state: {
         nmbBikeAvailable: httpResponse.data[i]?.states
           ? httpResponse.data[i]?.states?.numBikesAvailable
