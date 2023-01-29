@@ -6,15 +6,16 @@ import * as Location from "expo-location";
 import { Station } from "../../../../model/Station";
 
 export interface MapStationProps {
-  onStationSelected: Dispatch<SetStateAction<Station>>;
+  onStationSelected: Dispatch<SetStateAction<Station | undefined>>;
   stations: Station[];
-  stationSelected: Station;
+  stationSelected: Station | undefined;
 }
 
 const MapStation = (props: MapStationProps) => {
   const [location, setLocation] = useState(
     undefined as unknown as LocationObject
   );
+  const [displayMarker, setDisplayMarker] = useState(true);
   useEffect(() => {
     (async () => {
       await Location.requestForegroundPermissionsAsync();
@@ -35,17 +36,26 @@ const MapStation = (props: MapStationProps) => {
           latitudeDelta: location ? 0.015 : 0.15,
           longitudeDelta: location ? 0.0121 : 0.121,
         }}
+        onRegionChangeComplete={(region) => {
+          if (displayMarker && region.latitudeDelta > 0.03) {
+            props.onStationSelected(undefined);
+            setDisplayMarker(false);
+          }
+          if (!displayMarker && region.latitudeDelta < 0.03)
+            setDisplayMarker(true);
+        }}
       >
-        {props.stations.map((station, index) => (
-          <Marker
-            key={index}
-            onPress={() => props.onStationSelected(station)}
-            coordinate={
-              { latitude: station.lat, longitude: station.lng } as LatLng
-            }
-            title={station.name}
-          />
-        ))}
+        {displayMarker &&
+          props.stations.map((station, index) => (
+            <Marker
+              key={index}
+              onPress={() => props.onStationSelected(station)}
+              coordinate={
+                { latitude: station.lat, longitude: station.lng } as LatLng
+              }
+              title={station.name}
+            />
+          ))}
       </MapView>
     </View>
   );

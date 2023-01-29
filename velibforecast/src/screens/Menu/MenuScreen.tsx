@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, Button } from "react-native";
 import { Station } from "../../model/Station";
 import DetailsStation from "./Components/DetailsStation/DetailsStation";
 import MapStation from "./Components/MapStation/MapStation";
@@ -7,13 +7,14 @@ import SearchBar from "./Components/SearchBarStation/SearchBarStation";
 import Constants from "expo-constants";
 import StationService from "../../services/Station/Station.service";
 import { StationState } from "../../model/StationState";
+import ButtonConnection from "./Components/ButtonConnection/ButtonConnection";
 
-const MenuScreen = () => {
+const MenuScreen = ({ navigation }: any) => {
   const [stations, setStations] = useState([] as Station[]);
   const [stationsStatus, setStationsStatus] = useState([] as StationState[]);
   const needUpdate = useRef(false);
   const [stationSelected, setStationSelected] = useState(
-    undefined as unknown as Station
+    undefined as unknown as Station | undefined
   );
 
   useEffect(() => {
@@ -59,6 +60,7 @@ const MenuScreen = () => {
         stationSelected={stationSelected}
       />
       <SearchBar stations={stations} onStationSelected={setStationSelected} />
+      <ButtonConnection navigation={navigation} />
       <DetailsStation stationSelected={stationSelected} />
     </View>
   );

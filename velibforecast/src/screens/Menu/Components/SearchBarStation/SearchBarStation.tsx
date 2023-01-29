@@ -7,11 +7,13 @@ import {
   Dimensions,
   Button,
 } from "react-native";
+import { useSelector } from "react-redux";
 import { Station } from "../../../../model/Station";
+import { selectAccount } from "../../../../store/AccountSlice";
 
 export interface SearchBarStationProps {
   stations: Station[];
-  onStationSelected?: Dispatch<SetStateAction<Station>>;
+  onStationSelected?: Dispatch<SetStateAction<Station | undefined>>;
 }
 
 const SearchBarStation = (props: SearchBarStationProps) => {
@@ -20,6 +22,8 @@ const SearchBarStation = (props: SearchBarStationProps) => {
     props.stations
   );
   const [displaySuggestions, setDisplaySuggestions] = useState(false);
+
+  const account = useSelector(selectAccount);
 
   return (
     <View style={styles.container}>
@@ -34,6 +38,15 @@ const SearchBarStation = (props: SearchBarStationProps) => {
               .filter((station) =>
                 station.name.toUpperCase().includes(text.toUpperCase())
               )
+              .filter((station) => {
+                if (account.favoriteStations === undefined) return true;
+
+                let result = true;
+                account.favoriteStations.forEach((favStation) => {
+                  if (favStation.id === station.id) result = false;
+                });
+                return result;
+              })
               .sort((a, b) => a.name.localeCompare(b.name))
           );
         }}
@@ -45,12 +58,27 @@ const SearchBarStation = (props: SearchBarStationProps) => {
           ...styles.scrollView,
           height: displaySuggestions
             ? Math.min(
-                correspondingStations.length * 30,
+                (correspondingStations.length +
+                  (account.favoriteStations !== undefined
+                    ? account.favoriteStations?.length
+                    : 0)) *
+                  30,
                 Dimensions.get("window").height * 0.33
               )
             : 0,
         }}
       >
+        {account.favoriteStations &&
+          account.favoriteStations.map((station, index) => (
+            <Button
+              key={index}
+              onPress={() => {
+                if (props.onStationSelected) props.onStationSelected(station);
+              }}
+              title={station.name}
+              color="#999999"
+            />
+          ))}
         {correspondingStations.map((station, index) => (
           <Button
             key={index}
@@ -71,13 +99,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
     alignSelf: "stretch",
     marginLeft: 20,
-    marginRight: 60,
+    marginRight: 90,
   },
   input: {
     height: 40,
     backgroundColor: "white",
     alignSelf: "stretch",
     borderWidth: 1,
+    borderColor: "#1574AD",
     padding: 10,
     marginHorizontal: 0,
   },
