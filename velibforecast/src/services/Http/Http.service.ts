@@ -1,11 +1,12 @@
 import axios from "axios";
+import { Buffer } from "buffer";
 
 const get = async (url: string) => {
   return await axios.get(url);
 };
 
 const post = async (url: string, data: any) => {
-  return await axios.post(url, data, { validateStatus: () => true });
+  return await axios.post(url, data);
 };
 
 const put = async (url: string, data?: any, config?: any) => {
@@ -14,18 +15,18 @@ const put = async (url: string, data?: any, config?: any) => {
     config !== undefined &&
     config.auth !== null &&
     config.auth !== undefined
-  )
-    return await axios.put(url, data, {
-      validateStatus: () => true,
-      auth: {
-        username: config.auth.username,
-        password: config.auth.password,
-      },
-    });
+  ) {
+    const credentials = Buffer.from(
+      config.auth.username + ":" + config.auth.password
+    ).toString("base64");
+    const basicAuth = "Basic " + credentials;
 
-  return await axios.put(url, data, {
-    validateStatus: () => true,
-  });
+    return await axios.put(url, data, {
+      headers: { Authorization: basicAuth },
+    });
+  }
+
+  return await axios.put(url, data);
 };
 
 const setHeader = (key: string, value: string) => {
@@ -39,21 +40,13 @@ const removeHeader = (key: string) => {
 const setAuthToken = (token?: string) => {
   if (token) {
     setHeader("Authorization", `Bearer ${token}`);
-    localStorage.setItem("Authorization", token.toString());
   } else {
     removeHeader("Authorization");
-    localStorage.removeItem("Authorization");
   }
 };
 
 const isAuthTokenSetted = () => {
-  if (axios.defaults.headers.common["Authorization"]) return true;
-
-  if (localStorage.getItem("Authorization")) {
-    setAuthToken(localStorage.getItem("Authorization") as string);
-  }
-
-  return axios.defaults.headers.common["Authorization"] != null;
+  return axios.defaults.headers.common["Authorization"];
 };
 
 const HTTPService = {

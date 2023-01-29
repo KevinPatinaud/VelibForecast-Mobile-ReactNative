@@ -25,12 +25,12 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "config":
-      {
-        "googleMaps" : {
-          "apiKey" : "AIzaSyD6hOU8M2P9k_I8xYtzeolOOqCGveDHJhg"
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyD6hOU8M2P9k_I8xYtzeolOOqCGveDHJhg"
         }
-      }
+      },
+      "package": "com.kevinpatinaud.velibforecast"
     },
     "web": {
       "favicon": "./assets/favicon.png"
