@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   TextInput,
   StyleSheet,
@@ -6,7 +6,10 @@ import {
   ScrollView,
   Dimensions,
   Button,
+  Text,
+  ColorValue,
 } from "react-native";
+import { TouchableHighlight } from "react-native-gesture-handler";
 import { useSelector } from "react-redux";
 import { Station } from "../../../../model/Station";
 import { selectAccount } from "../../../../store/AccountSlice";
@@ -23,7 +26,39 @@ const SearchBarStation = (props: SearchBarStationProps) => {
   );
   const [displaySuggestions, setDisplaySuggestions] = useState(false);
 
+  useEffect(() => {
+    setCorrespondingStations(props.stations);
+  }, [props.stations]);
+
   const account = useSelector(selectAccount);
+  const OptionList = (props: {
+    station: Station;
+    index: number;
+    onStationSelected?: Dispatch<SetStateAction<Station | undefined>>;
+    backgroundColor?: ColorValue;
+  }) => {
+    return (
+      <TouchableHighlight
+        key={props.index}
+        style={
+          props.backgroundColor
+            ? { ...styles.touchable, backgroundColor: props.backgroundColor }
+            : styles.touchable
+        }
+        onPress={() => {
+          if (props.onStationSelected) {
+            props.onStationSelected(props.station);
+          }
+        }}
+      >
+        <View>
+          <Text style={styles.touchableText}>
+            <Text>{props.station.name}</Text>
+          </Text>
+        </View>
+      </TouchableHighlight>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -33,63 +68,50 @@ const SearchBarStation = (props: SearchBarStationProps) => {
         onFocus={() => setDisplaySuggestions(true)}
         onChangeText={(text: string) => {
           setText(text);
-          setCorrespondingStations(
-            props.stations
-              .filter((station) =>
-                station.name.toUpperCase().includes(text.toUpperCase())
-              )
-              .filter((station) => {
-                if (account.favoriteStations === undefined) return true;
+          if (text.length > 3) {
+            setCorrespondingStations(
+              props.stations
+                .filter((station) =>
+                  station.name.toUpperCase().includes(text.toUpperCase())
+                )
+                .filter((station) => {
+                  if (account.favoriteStations === undefined) return true;
 
-                let result = true;
-                account.favoriteStations.forEach((favStation) => {
-                  if (favStation.id === station.id) result = false;
-                });
-                return result;
-              })
-              .sort((a, b) => a.name.localeCompare(b.name))
-          );
+                  let result = true;
+                  account.favoriteStations.forEach((favStation) => {
+                    if (favStation.id === station.id) result = false;
+                  });
+                  return result;
+                })
+                .sort((a, b) => a.name.localeCompare(b.name))
+            );
+          } else {
+            setCorrespondingStations([]);
+          }
         }}
         value={text}
         placeholder="Entrez le nom d'une station"
       />
-      <ScrollView
-        style={{
-          ...styles.scrollView,
-          height: displaySuggestions
-            ? Math.min(
-                (correspondingStations.length +
-                  (account.favoriteStations !== undefined
-                    ? account.favoriteStations?.length
-                    : 0)) *
-                  30,
-                Dimensions.get("window").height * 0.33
-              )
-            : 0,
-        }}
-      >
-        {account.favoriteStations &&
-          account.favoriteStations.map((station, index) => (
-            <Button
-              key={index}
-              onPress={() => {
-                if (props.onStationSelected) props.onStationSelected(station);
-              }}
-              title={station.name}
-              color="#999999"
+      {displaySuggestions && (
+        <ScrollView style={styles.scrollView}>
+          {account.favoriteStations &&
+            account.favoriteStations.map((station, index) => (
+              <OptionList
+                station={station}
+                index={index}
+                onStationSelected={props.onStationSelected}
+                backgroundColor={"#aaaaaa"}
+              />
+            ))}
+          {correspondingStations.map((station, index) => (
+            <OptionList
+              station={station}
+              index={index}
+              onStationSelected={props.onStationSelected}
             />
           ))}
-        {correspondingStations.map((station, index) => (
-          <Button
-            key={index}
-            onPress={() => {
-              if (props.onStationSelected) props.onStationSelected(station);
-            }}
-            title={station.name}
-            color="#1574AD"
-          />
-        ))}
-      </ScrollView>
+        </ScrollView>
+      )}
     </View>
   );
 };
@@ -111,9 +133,21 @@ const styles = StyleSheet.create({
     marginHorizontal: 0,
   },
   scrollView: {
-    backgroundColor: "#eeeeee",
     marginTop: 0,
     marginHorizontal: 0,
+    height: Dimensions.get("window").height * 0.33,
+  },
+  touchable: {
+    backgroundColor: "#1574AD",
+    border: 1,
+    borderColor: "black",
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  touchableText: {
+    color: "white",
+    size: 18,
   },
   text: {
     fontSize: 42,
