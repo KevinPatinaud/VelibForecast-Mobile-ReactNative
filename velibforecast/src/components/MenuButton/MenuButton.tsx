@@ -18,13 +18,11 @@ const MenuButton = (props: MenuButtonProps) => {
           props.navigation.navigate("Menu");
         }}
       >
-        <View>
-          <Ionicons
-            name="home"
-            size={props.size ? props.size : 24}
-            color="#1574AD"
-          />
-        </View>
+        <Ionicons
+          name="home"
+          size={props.size ? props.size : 24}
+          color="#1574AD"
+        />
       </TouchableHighlight>
     </View>
   );

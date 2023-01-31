@@ -22,13 +22,9 @@ export interface SearchBarStationProps {
 const SearchBarStation = (props: SearchBarStationProps) => {
   const [text, setText] = useState("");
   const [correspondingStations, setCorrespondingStations] = useState(
-    props.stations
+    [] as Station[]
   );
   const [displaySuggestions, setDisplaySuggestions] = useState(false);
-
-  useEffect(() => {
-    setCorrespondingStations(props.stations);
-  }, [props.stations]);
 
   const account = useSelector(selectAccount);
   const OptionList = (props: {

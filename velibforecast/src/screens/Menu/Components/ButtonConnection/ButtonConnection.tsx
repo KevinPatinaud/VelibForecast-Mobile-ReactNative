@@ -6,6 +6,7 @@ import {
   disconnectAccount,
   selectAccount,
 } from "../../../../store/AccountSlice";
+import { deleteValueFromSecureStore } from "../../../../helper/Utils";
 
 export interface ButtonConnectionProps {
   navigation: any;
@@ -24,17 +25,15 @@ const ButtonConnection = (props: ButtonConnectionProps) => {
           setDisplayMenu(!displayMenu);
         }}
       >
-        <View>
-          <Ionicons
-            name={
-              account.isConnected
-                ? "md-person-circle"
-                : "md-person-circle-outline"
-            }
-            size={40}
-            color="#1574AD"
-          />
-        </View>
+        <Ionicons
+          name={
+            account.isConnected
+              ? "md-person-circle"
+              : "md-person-circle-outline"
+          }
+          size={40}
+          color="#1574AD"
+        />
       </TouchableHighlight>
       {displayMenu && !account.isConnected && (
         <View style={styles.menu}>
@@ -43,7 +42,7 @@ const ButtonConnection = (props: ButtonConnectionProps) => {
             title="Créer un compte"
             onPress={() => {
               setDisplayMenu(false);
-              props.navigation.navigate("LogIn");
+              props.navigation.navigate("SignUp");
             }}
           />
           <Button
@@ -63,6 +62,8 @@ const ButtonConnection = (props: ButtonConnectionProps) => {
             title="Me déconnecter"
             onPress={() => {
               setDisplayMenu(false);
+              deleteValueFromSecureStore("MAIL");
+              deleteValueFromSecureStore("PASSWORD");
               dispatch(disconnectAccount());
             }}
           />

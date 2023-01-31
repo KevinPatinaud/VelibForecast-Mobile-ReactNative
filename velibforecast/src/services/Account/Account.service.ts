@@ -114,16 +114,19 @@ const disconnect = () => {
   HttpService.setAuthToken();
 };
 
-const addFavoriteStation = (station: Station) => {
-  HttpService.put(getServerURL() + ":8083/api/user/addfavoritestation", {
+const addFavoriteStation = async (station: Station) => {
+  await HttpService.put(getServerURL() + ":8083/api/user/addfavoritestation", {
     id_station: station.id,
   });
 };
 
-const removeFavoriteStation = (station: Station) => {
-  HttpService.put(getServerURL() + ":8083/api/user/removefavoritestation", {
-    id_station: station.id,
-  });
+const removeFavoriteStation = async (station: Station) => {
+  await HttpService.put(
+    getServerURL() + ":8083/api/user/removefavoritestation",
+    {
+      id_station: station.id,
+    }
+  );
 };
 
 const AccountService = {

@@ -3,6 +3,7 @@ import { Dispatch } from "react";
 import { Account } from "../model/Account";
 import AccountService from "../services/Account/Account.service";
 import { recordAccount } from "../store/AccountSlice";
+import { getValueFromSecureStore } from "./Utils";
 
 export const connection = async (
   email: string,
@@ -20,4 +21,12 @@ export const connection = async (
     return result;
   }
   return undefined;
+};
+
+export const refreshUserInfo = async (dispatch: Dispatch<AnyAction>) => {
+  connection(
+    await getValueFromSecureStore("MAIL"),
+    await getValueFromSecureStore("PASSWORD"),
+    dispatch
+  );
 };
