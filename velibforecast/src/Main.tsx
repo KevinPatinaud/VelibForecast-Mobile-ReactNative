@@ -7,7 +7,7 @@ import LogInScreen from "./screens/Login/LoginScreen";
 import SignUpScreen from "./screens/SignUp/SignUpScreen";
 import { getValueFromSecureStore } from "./helper/Utils";
 import { useDispatch } from "react-redux";
-import { connection } from "./helper/Connection";
+import { connection, refreshUserInfo } from "./helper/Connection";
 
 const Stack = createStackNavigator();
 
@@ -15,13 +15,7 @@ const Main: FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    (async () => {
-      connection(
-        await getValueFromSecureStore("MAIL"),
-        await getValueFromSecureStore("PASSWORD"),
-        dispatch
-      );
-    })();
+    refreshUserInfo(dispatch);
   }, []);
 
   return (

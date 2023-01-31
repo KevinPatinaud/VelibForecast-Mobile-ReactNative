@@ -1,5 +1,5 @@
 import { LocationObject } from "expo-location";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import MapView, {
   LatLng,
@@ -19,46 +19,50 @@ export interface MapStationProps {
 
 const MapStation = (props: MapStationProps) => {
   const [displayMarker, setDisplayMarker] = useState(true);
-  const [region, setRegion] = useState({
+  const region = useRef({
     latitude: 48.864716,
     longitude: 2.349014,
     latitudeDelta: 0.15,
     longitudeDelta: 0.121,
   } as Region);
+  const _mapView = useRef({} as MapView);
 
   useEffect(() => {
     (async () => {
       await Location.requestForegroundPermissionsAsync();
       const location = await Location.getCurrentPositionAsync({});
-      setRegion({
+      region.current = {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
         latitudeDelta: 0.015,
         longitudeDelta: 0.0121,
-      });
+      };
     })();
   }, []);
 
   useEffect(() => {
-    setRegion({
+    _mapView.current.animateToRegion({
       latitude: props.stationSelected
         ? props.stationSelected.lat
-        : region.latitude,
+        : region.current.latitude,
       longitude: props.stationSelected
         ? props.stationSelected.lng
-        : region.longitude,
-      latitudeDelta: region.latitudeDelta,
-      longitudeDelta: region.longitudeDelta,
+        : region.current.longitude,
+      latitudeDelta: region.current.latitudeDelta,
+      longitudeDelta: region.current.longitudeDelta,
     });
   }, [props.stationSelected]);
 
   return (
     <View style={styles.container}>
       <MapView
+        ref={(mapView) => {
+          if (mapView !== null) _mapView.current = mapView;
+        }}
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         showsUserLocation={true}
-        region={region}
+        region={region.current}
         onRegionChange={(region) => {
           if (displayMarker && region.latitudeDelta > 0.03) {
             props.onStationSelected(undefined);
@@ -76,7 +80,6 @@ const MapStation = (props: MapStationProps) => {
               coordinate={
                 { latitude: station.lat, longitude: station.lng } as LatLng
               }
-              title={station.name}
               icon={
                 props.stationSelected && station.id === props.stationSelected.id
                   ? selectedMarker

@@ -61,7 +61,7 @@ const MenuScreen = ({ navigation }: any) => {
       />
       <SearchBar stations={stations} onStationSelected={setStationSelected} />
       <ButtonConnection navigation={navigation} />
-      <DetailsStation stationSelected={stationSelected} />
+      {stationSelected && <DetailsStation stationSelected={stationSelected} />}
     </View>
   );
 };
